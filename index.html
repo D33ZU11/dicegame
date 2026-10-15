@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yvonne's Game | Gothic Viking Rules</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=MedievalSharp&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0a080d;
+      --card-bg: rgba(20, 16, 26, 0.85);
+      --gold: #d4af37;
+      --red-accent: #8b0000;
+      --red-glow: #ff2a2a;
+      --blue-accent: #1e3f66;
+      --blue-glow: #00bfff;
+      --text: #e0d8e8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: radial-gradient(circle at center, #1a0f24 0%, #050407 100%);
+      color: var(--text);
+      font-family: 'Montserrat', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 650px;
+      width: 100%;
+      background: var(--card-bg);
+      border: 2px solid #33243b;
+      box-shadow: 0 0 30px rgba(0,0,0,0.9), inset 0 0 15px rgba(212,175,55,0.1);
+      border-radius: 12px;
+      padding: 30px;
+      text-align: center;
+      position: relative;
+    }
+
+    h1 {
+      font-family: 'Cinzel Decorative', cursive;
+      color: var(--gold);
+      font-size: 2.2rem;
+      letter-spacing: 2px;
+      margin-bottom: 5px;
+      text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+    }
+
+    .subtitle {
+      font-family: 'MedievalSharp', cursive;
+      font-size: 1.1rem;
+      color: #9a82a6;
+      margin-bottom: 25px;
+    }
+
+    /* Player Setup / Selector */
+    .turn-tracker {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .player-btn {
+      background: #15101a;
+      border: 1px solid #443350;
+      color: #887396;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-family: 'MedievalSharp', cursive;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .player-btn.active {
+      border-color: var(--gold);
+      color: var(--gold);
+      box-shadow: 0 0 12px rgba(212, 175, 55, 0.4);
+      background: #251a2e;
+    }
+
+    /* Rule Mode Selection */
+    .streak-selector {
+      margin-bottom: 25px;
+    }
+
+    .streak-selector label {
+      display: block;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+      color: #bfa8cb;
+    }
+
+    .streak-options {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .streak-btn {
+      background: #1a1221;
+      border: 1px solid #3d2b4a;
+      color: var(--text);
+      padding: 12px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+    }
+
+    .streak-btn.selected {
+      background: #341845;
+      border-color: var(--gold);
+      color: #fff;
+      font-weight: bold;
+      box-shadow: 0 0 10px rgba(186, 85, 211, 0.3);
+    }
+
+    /* Dice Container */
+    .dice-area {
+      display: flex;
+      justify-content: space-around;
+      margin: 30px 0;
+      gap: 20px;
+    }
+
+    .dice-box {
+      flex: 1;
+      background: rgba(10, 8, 13, 0.6);
+      border-radius: 10px;
+      padding: 20px 10px;
+      border: 1px solid #2a1f33;
+    }
+
+    .dice {
+      width: 80px;
+      height: 80px;
+      margin: 15px auto;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      font-weight: bold;
+      font-family: 'Cinzel Decorative', cursive;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+      transition: transform 0.1s;
+    }
+
+    .dice-red {
+      background: linear-gradient(145deg, #500000, #1a0000);
+      border: 2px solid var(--red-accent);
+      color: #ffcccc;
+      text-shadow: 0 0 8px var(--red-glow);
+    }
+
+    .dice-blue {
+      background: linear-gradient(145deg, #0a2540, #020b14);
+      border: 2px solid var(--blue-accent);
+      color: #ccf2ff;
+      text-shadow: 0 0 8px var(--blue-glow);
+    }
+
+    /* Roll Button */
+    .roll-btn {
+      background: linear-gradient(180deg, #8b0000 0%, #4a0000 100%);
+      border: 2px solid var(--gold);
+      color: var(--gold);
+      font-family: 'Cinzel Decorative', cursive;
+      font-size: 1.3rem;
+      padding: 15px 40px;
+      border-radius: 30px;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      box-shadow: 0 0 20px rgba(139, 0, 0, 0.6);
+      transition: all 0.2s;
+    }
+
+    .roll-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 30px rgba(212, 175, 55, 0.6);
+    }
+
+    .roll-btn:active {
+      transform: scale(0.98);
+    }
+
+    /* Result Outcome Display */
+    .result-card {
+      margin-top: 30px;
+      background: rgba(15, 10, 20, 0.9);
+      border: 1px dashed var(--gold);
+      border-radius: 8px;
+      padding: 20px;
+      display: none;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .result-card h3 {
+      font-family: 'MedievalSharp', cursive;
+      color: var(--gold);
+      margin-bottom: 10px;
+      font-size: 1.3rem;
+    }
+
+    .outcome-text {
+      font-size: 1.2rem;
+      line-height: 1.6;
+    }
+
+    .outcome-red { color: #ff6b6b; font-weight: 600; }
+    .outcome-blue { color: #64dfdf; font-weight: 600; }
+
+    /* Rolling animation class */
+    .shake {
+      animation: shake 0.4s infinite;
+    }
+
+    @keyframes shake {
+      0% { transform: translate(1px, 1px) rotate(0deg); }
+      20% { transform: translate(-2px, -2px) rotate(-3deg); }
+      40% { transform: translate(2px, 0px) rotate(3deg); }
+      60% { transform: translate(-1px, 2px) rotate(0deg); }
+      80% { transform: translate(2px, 1px) rotate(2deg); }
+      100% { transform: translate(1px, -2px) rotate(-1deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Yvonne's Game</h1>
+    <div class="subtitle">ᚱᚢᚾᛖ me with Passion & Pain ᚱᚢᚾᛖ</div>
+
+    <!-- Active Player Selector -->
+    <div class="turn-tracker">
+      <button class="player-btn active" onclick="setPlayer(this, 'Yvonne')">Yvonne's Turn</button>
+      <button class="player-btn" onclick="setPlayer(this, 'Partner')">Partner's Turn</button>
+    </div>
+
+    <!-- Rule Condition Selector -->
+    <div class="streak-selector">
+      <label>Select Fate Condition:</label>
+      <div class="streak-options">
+        <button class="streak-btn selected" onclick="selectCondition('right3', this)">3 Right in a Row</button>
+        <button class="streak-btn" onclick="selectCondition('wrong2', this)">2 Wrong in a Row</button>
+        <button class="streak-btn" onclick="selectCondition('wrong4', this)">4 Wrong in a Row</button>
+      </div>
+    </div>
+
+    <!-- Dice Visuals -->
+    <div class="dice-area">
+      <div class="dice-box">
+        <div style="color: #ff6b6b; font-family: 'MedievalSharp', cursive;">Action (Red)</div>
+        <div class="dice dice-red" id="diceRed">ᚠ</div>
+      </div>
+      <div class="dice-box">
+        <div style="color: #64dfdf; font-family: 'MedievalSharp', cursive;">Duration (Blue)</div>
+        <div class="dice dice-blue" id="diceBlue">ᚢ</div>
+      </div>
+    </div>
+
+    <!-- Roll Action -->
+    <button class="roll-btn" onclick="rollDice()">Cast the Dice</button>
+
+    <!-- Outcome Card -->
+    <div class="result-card" id="resultCard">
+      <h3 id="resultHeader">Fate Has Decided</h3>
+      <div class="outcome-text">
+        <span class="outcome-red" id="redOutcome"></span> 
+        <br>
+        <span class="outcome-blue" id="blueOutcome"></span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Game Rules Database
+    const rules = {
+      right3: {
+        title: "3 Right in a Row — Reward",
+        red: {
+          1: "Lick ass",
+          2: "Suck cock",
+          3: "Kiss",
+          4: "Ball play",
+          5: "Lick ass & milk cock together",
+          6: "Lick nipples"
+        },
+        blue: {
+          1: "5 mins",
+          2: "10 times",
+          3: "15 seconds",
+          4: "15 times",
+          5: "10 mins",
+          6: "You choose duration/count"
+        }
+      },
+      wrong2: {
+        title: "2 Wrong in a Row — Penance",
+        red: {
+          1: "Smack in ass",
+          2: "Pull nipples",
+          3: "Bite neck",
+          4: "Slap cock",
+          5: "Slap face",
+          6: "You choose action"
+        },
+        blue: {
+          1: "10 seconds",
+          2: "4 times",
+          3: "You choose duration/count",
+          4: "15 times",
+          5: "5 mins",
+          6: "I choose duration/count"
+        }
+      },
+      wrong4: {
+        title: "4 Wrong in a Row — Severe Punishment",
+        red: {
+          1: "Chest smacked",
+          2: "Cock pulled",
+          3: "Balls squeezed",
+          4: "Kick in balls",
+          5: "Back slapped",
+          6: "You choose action"
+        },
+        blue: {
+          1: "I choose duration/count",
+          2: "6 times",
+          3: "You choose duration/count",
+          4: "5 mins",
+          5: "11 mins",
+          6: "20 times"
+        }
+      }
+    };
+
+    let currentCondition = 'right3';
+    let currentPlayer = 'Yvonne';
+
+    function setPlayer(btn, player) {
+      document.querySelectorAll('.player-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentPlayer = player;
+    }
+
+    function selectCondition(cond, btn) {
+      document.querySelectorAll('.streak-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      currentCondition = cond;
+    }
+
+    function playSound() {
+      // Audio synthesis for dice roll sound without needing external files
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      for (let i = 0; i < 5; i++) {
+        setTimeout(() => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(120 + Math.random() * 80, ctx.currentTime);
+          gain.gain.setValueAtTime(0.3, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.05);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.05);
+        }, i * 70);
+      }
+    }
+
+    function rollDice() {
+      const redDice = document.getElementById('diceRed');
+      const blueDice = document.getElementById('diceBlue');
+      const resultCard = document.getElementById('resultCard');
+
+      // Play roll sound
+      playSound();
+
+      // UI effects during roll
+      redDice.classList.add('shake');
+      blueDice.classList.add('shake');
+      resultCard.style.display = 'none';
+
+      let count = 0;
+      const interval = setInterval(() => {
+        redDice.innerText = Math.floor(Math.random() * 6) + 1;
+        blueDice.innerText = Math.floor(Math.random() * 6) + 1;
+        count++;
+
+        if (count > 12) {
+          clearInterval(interval);
+          
+          // Final Roll Values
+          const redVal = Math.floor(Math.random() * 6) + 1;
+          const blueVal = Math.floor(Math.random() * 6) + 1;
+
+          redDice.innerText = redVal;
+          blueDice.innerText = blueVal;
+
+          redDice.classList.remove('shake');
+          blueDice.classList.remove('shake');
+
+          // Display Results
+          const ruleSet = rules[currentCondition];
+          document.getElementById('resultHeader').innerText = `${currentPlayer}'s Fate: ${ruleSet.title}`;
+          document.getElementById('redOutcome').innerText = `Action: ${ruleSet.red[redVal]}`;
+          document.getElementById('blueOutcome').innerText = `Duration / Count: ${ruleSet.blue[blueVal]}`;
+          resultCard.style.display = 'block';
+        }
+      }, 70);
+    }
+  </script>
+</body>
+</html>
